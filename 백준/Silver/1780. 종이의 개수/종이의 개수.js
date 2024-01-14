@@ -1,50 +1,66 @@
-const fs = require('fs');
-let [N, ...paper] = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
+const filePath = process.platform === 'linux' ? '/dev/stdin' : 'input.txt';
 
-N = N * 1;
-paper = paper.map(line => line.split(' '));
+let [N,...paper] = require("fs")
+  .readFileSync(filePath)
+  .toString()
+  .trim().split('\n');
 
-// 계수 변수 선언
-let minusOne = 0;
-let zero = 0;
-let one = 0;
+ N = +N;
 
-// 함수 실행 및 결과갑 출력
-divideConquer(0, 0, N);
-const answer = minusOne + '\n' + zero + '\n' + one;
-console.log(answer);
+
+
+// console.log(n);
+let result = new Array(3).fill(0); // 결과값을 담을 배열
+paper = paper.map(s => s.replace('\r', '').split(' '));
+
+// console.log(paper);
+
+
+
 
 // 분할 정복 함수
-function divideConquer(column, row, length) {
-  if (checkBox(column, row, length)) {
-    const initialValue = paper[column][row];
-    if (initialValue === '-1') {
-      minusOne++;
-    } else if (initialValue === '0') {
-      zero++;
-    } else {
-      one++;
+const divideConquer = (column, row, length) => {
+    if(checkBox(column, row, length)){
+        const num = paper[column][row];
+        if(num === '-1'){
+            result[0]++;
+        }else if(num === '0'){
+            result[1]++;
+        }else{
+            result[2]++;
+        }
+        
+    }else{
+        let newLength = length/3;
+        for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){
+                divideConquer(column+ newLength * i , row + newLength*j, newLength);
+            }
+        }
     }
-  } else {
-    const dividedLength = length / 3;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        divideConquer(column + dividedLength * i, row + dividedLength * j, dividedLength);
-      }
-    }
-  }
+
 }
 
-// 분면 확인 함수
-function checkBox(column, row, length) {
-  const initialValue = paper[column][row];
-  for (let i = 0; i < length; i++) {
-    for (let j = 0; j < length; j++) {
-      if (paper[column + i][row + j] !== initialValue) {
-        return false;
-      }
-    }
-  }
 
-  return true;
+
+
+// 체크 함수
+const checkBox = (column, row, length) => {
+
+    let firstnum = paper[column][row];
+
+    for(let i = 0; i < length; i++){
+        for(let j = 0; j < length; j++){
+            if(paper[column+i][row+j] !== firstnum){
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }
+
+divideConquer(0,0,N);
+
+let String = `${result[0]+'\n'+result[1]+'\n'+result[2]}`
+console.log(String);
