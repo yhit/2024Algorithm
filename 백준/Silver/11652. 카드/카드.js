@@ -1,46 +1,65 @@
-const [n, ...arr] = require("fs").readFileSync("/dev/stdin").toString().trim().split("\n");
+const filePath = process.platform === 'linux' ? '/dev/stdin' : 'input.txt';
 
-function mergeSort(arr) {
-    if (arr.length <= 1) return arr;
+const [N,...numbers] = require("fs")
+  .readFileSync(filePath)
+  .toString()
+  .trim().split('\n');
 
-    const mid = Math.floor(arr.length/2);
-    const left = mergeSort(arr.slice(0, mid));
-    const right = mergeSort(arr.slice(mid));
+let number = numbers.map(v=>v.trim())
 
-    let i = 0; let j = 0;
-    const sorted = [];
+// console.log(number)
 
-    while (i < left.length && j < right.length) {
-        if (left[i] < right[j]) {
-            sorted.push(left[i]);
-            i++;
-        }
-        else {
-            sorted.push(right[j]);
-            j++;
-        }
-    }
 
-    if (i < left.length) sorted.push(...left.slice(i));
-    if (j < right.length) sorted.push(...right.slice(j));
-
-    return sorted;
+const mergeSort = (arr) => {
+if(arr.length === 1){
+    return arr;
 }
 
-const sorted_arr = mergeSort(arr.map(v => BigInt(v)));
-let maxCount = 0;
-let curCount = 0;
-let prevNumber = "";
-let largest = 2**62;
-sorted_arr.forEach(v => {
-    if (prevNumber !== v) {
-        prevNumber = v;
-        curCount = 0;
+let mid = Math.floor(arr.length/2);
+let first = mergeSort(arr.slice(0,mid));
+let last = mergeSort(arr.slice(mid));
+
+let i = 0; let j = 0 ;
+const sorted = [];
+
+while(i<first.length && j < last.length){
+    if(first[i] < last[j]){
+        sorted.push(first[i]);
+        i++;
+    }else{
+        sorted.push(last[j]);
+        j++;
     }
-    curCount++;
-    if ((curCount > maxCount) || (curCount === maxCount && largest > v)) {
-        maxCount = curCount;
-        largest = v;
+}
+
+if(i < first.length){
+    sorted.push(...first.slice(i));
+}
+if(j < last.length){
+    sorted.push(...last.slice(j)); 
+}
+
+return sorted;
+
+}
+
+const result = mergeSort(number.map(v=>BigInt(v)));
+let MAX = 0;
+let currenCount = 0;
+let answer = 2**62;;
+let previous = '';
+
+// console.log(result);
+
+for(let  i = 0; i < result.length; i++){
+    if(result[i] != previous){
+        previous = result[i];
+        currenCount = 0;
     }
-});
-console.log(String(largest));
+    currenCount++;
+    if(currenCount > MAX || currenCount === MAX && answer > result[i]){
+        MAX = currenCount;
+        answer = result[i];
+    }
+}
+console.log(String(answer));
