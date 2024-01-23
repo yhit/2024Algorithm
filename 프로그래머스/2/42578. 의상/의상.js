@@ -13,7 +13,7 @@ function solution(clothes) {
     for(let value of box.values()){
         
         answer *= (value + 1);
-        console.log(value)
+        console.log("값"+value)
         console.log(answer)
     }
 
